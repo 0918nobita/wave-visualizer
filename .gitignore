@@ -1,2 +1,5 @@
 /elm-stuff/
-/index.html
+/node_modules/
+/.ninja_deps
+/.ninja_log
+/index.js

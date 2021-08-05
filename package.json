@@ -1,0 +1,11 @@
+{
+    "name": "wave-visualizer",
+    "version": "0.1.0",
+    "repository": "git@github.com:0918nobita/wave-visualizer.git",
+    "author": "0918nobita <nobita.0918@gmail.com>",
+    "license": "MIT",
+    "private": true,
+    "devDependencies": {
+        "terser": "5.7.1"
+    }
+}

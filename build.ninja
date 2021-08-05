@@ -1,0 +1,4 @@
+rule compile
+    command = elm make $in --optimize --output=$out && pnpx terser $out --compress --mangle --output $out
+
+build index.js: compile src/Main.elm
