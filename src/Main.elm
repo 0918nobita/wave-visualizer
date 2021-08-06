@@ -1,55 +1,83 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, pre, text)
+import Browser.Events exposing (onAnimationFrameDelta)
+import Html exposing (Html, div, pre, text)
 import Http
 
 
 main : Program () Model Msg
 main =
-    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
 
 
-type Model
+type HttpClientModel
     = Loading
     | Success String
     | Failure
 
 
+type alias Model =
+    { httpClient : HttpClientModel
+    , elapsedTime : Float
+    }
+
+
 init : () -> ( Model, Cmd Msg )
 init () =
-    ( Loading, Http.get { url = "https://elm-lang.org/assets/public-opinion.txt", expect = Http.expectString GotText } )
+    ( { httpClient = Loading
+      , elapsedTime = 0
+      }
+    , Http.get
+        { url = "https://elm-lang.org/assets/public-opinion.txt"
+        , expect = Http.expectString GotText
+        }
+    )
 
 
 type Msg
     = GotText (Result Http.Error String)
+    | Tick Float
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg _ =
+update msg model =
     case msg of
         GotText result ->
             case result of
                 Ok fullText ->
-                    ( Success fullText, Cmd.none )
+                    ( { model | httpClient = Success fullText }, Cmd.none )
 
                 Err _ ->
-                    ( Failure, Cmd.none )
+                    ( { model | httpClient = Failure }, Cmd.none )
+
+        Tick time ->
+            ( { model | elapsedTime = model.elapsedTime + time }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    onAnimationFrameDelta Tick
 
 
 view : Model -> Html Msg
 view model =
-    case model of
-        Loading ->
-            text "Loading..."
+    div []
+        [ div [] [ text (String.fromFloat model.elapsedTime) ]
+        , div []
+            [ case model.httpClient of
+                Loading ->
+                    text "Loading..."
 
-        Success fullText ->
-            pre [] [ text fullText ]
+                Success fullText ->
+                    pre [] [ text fullText ]
 
-        Failure ->
-            text "Failed to load your book"
+                Failure ->
+                    text "Failed to load your book"
+            ]
+        ]
