@@ -1,4 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+
+import { Action } from './store';
 
 const sin = (x: number, t: number) => Math.sin(x * 0.01 + t) * 150 + 250;
 
@@ -12,6 +16,7 @@ export const App: React.VFC = () => {
         null
     );
     const [recording, setRecording] = useState(false);
+    const dispatch = useDispatch<Dispatch<Action>>();
 
     useEffect(() => {
         if (ref.current === null) return;
@@ -71,8 +76,15 @@ export const App: React.VFC = () => {
         setRecording(false);
     }, [mediaRecorder, setRecording]);
 
+    const ping = useCallback(() => {
+        dispatch({ type: 'ping' });
+    }, [dispatch]);
+
     return (
         <>
+            <div>
+                <button onClick={ping}>PING</button>
+            </div>
             <p>Wave Visualizer</p>
             <canvas ref={ref} width="500" height="500" />
             <div>
