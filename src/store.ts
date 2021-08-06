@@ -1,13 +1,20 @@
+import produce from 'immer';
 import { Reducer } from 'redux';
 
 export type State = {
-    isPinging: boolean;
+    recording: 'loading' | 'unsupported' | 'inactive' | 'active';
 };
 
-export type Action = { type: 'ping' } | { type: 'pong' };
+export type Action =
+    | { type: 'disableRecordingFeature' }
+    | { type: 'enableRecordingFeature' }
+    | { type: 'startRecording' }
+    | { type: 'startRecording/success' }
+    | { type: 'startRecording/failure' }
+    | { type: 'stopRecording' };
 
 const initialState: State = {
-    isPinging: false,
+    recording: 'loading',
 };
 
 export const reducer: Reducer<State, Action> = (
@@ -15,10 +22,22 @@ export const reducer: Reducer<State, Action> = (
     action
 ) => {
     switch (action.type) {
-        case 'ping':
-            return { isPinging: true };
-        case 'pong':
-            return { isPinging: false };
+        case 'disableRecordingFeature':
+            return produce(state, (draft) => {
+                draft.recording = 'unsupported';
+            });
+        case 'enableRecordingFeature':
+            return produce(state, (draft) => {
+                draft.recording = 'inactive';
+            });
+        case 'startRecording':
+            return produce(state, (draft) => {
+                draft.recording = 'active';
+            });
+        case 'stopRecording':
+            return produce(state, (draft) => {
+                draft.recording = 'inactive';
+            });
         default:
             return state;
     }
