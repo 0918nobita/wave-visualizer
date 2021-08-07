@@ -11,25 +11,32 @@ const ctx = canvas.getContext('2d')!;
 const subCanvas = document.getElementById('sub-canvas') as HTMLCanvasElement;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const subCtx = subCanvas.getContext('2d')!;
-
-const sin = (x: number, t: number) => Math.sin(x * 0.02 + t) * 80 + 180;
-
 subCtx.lineWidth = 1;
 
 const draw = (time: number) => {
-    const t = time * 0.005;
-
     subCtx.fillStyle = 'rgb(240, 240, 240)';
     subCtx.fillRect(0, 0, 640, 360);
 
+    const theta = time / 700;
+    const xA = 150;
+    const yA = 180;
+    const xB = 250;
+    const yB = 180;
+
+    const xC = (xB - xA) * Math.cos(theta) - (yB - yA) * Math.sin(theta) + xA;
+    const yC = (yB - yA) * Math.cos(theta) + (xB - xA) * Math.sin(theta) + yA;
+
     subCtx.fillStyle = 'rgb(0, 0, 0)';
     subCtx.beginPath();
-    subCtx.moveTo(0, sin(0, t));
-
-    for (let x = 1; x <= 640; x++) subCtx.lineTo(x, sin(x, t));
-
+    subCtx.arc(xA, yA, 100, 0, 2 * Math.PI);
     subCtx.stroke();
+
+    subCtx.beginPath();
+    subCtx.arc(xC, yC, 5, 0, 2 * Math.PI);
+    subCtx.fill();
+
     ctx.putImageData(subCtx.getImageData(0, 0, 640, 360), 0, 0);
+
     requestAnimationFrame(draw);
 };
 
